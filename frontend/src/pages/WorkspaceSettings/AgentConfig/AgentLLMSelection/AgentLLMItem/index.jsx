@@ -6,8 +6,6 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
 
-const NO_SETTINGS_NEEDED = ["default", "none"];
-
 export default function AgentLLMItem({
   llm,
   availableLLMs,
@@ -70,20 +68,18 @@ export default function AgentLLMItem({
               <div className="mt-1 text-xs text-white/60">{description}</div>
             </div>
           </div>
-          {checked &&
-            value !== "none" &&
-            !NO_SETTINGS_NEEDED.includes(value) && (
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  openModal();
-                }}
-                className="border-none p-2 text-white/60 hover:text-white hover:bg-theme-bg-hover rounded-md transition-all duration-300"
-                title="Edit Settings"
-              >
-                <Gear size={20} weight="bold" />
-              </button>
-            )}
+          {checked && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                openModal();
+              }}
+              className="border-none p-2 text-white/60 hover:text-white hover:bg-theme-bg-hover rounded-md transition-all duration-300"
+              title="Edit Settings"
+            >
+              <Gear size={20} weight="bold" />
+            </button>
+          )}
         </div>
       </div>
       <SetupProvider
@@ -122,6 +118,7 @@ function SetupProvider({
       return;
     }
 
+    showToast(`${LLMOption.name} settings saved successfully.`, "success");
     closeModal();
     postSubmit();
     return false;
@@ -149,7 +146,7 @@ function SetupProvider({
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto p-1">
                 <p className="text-sm text-white/60">
-                  To use {LLMOption.name} as this workspace's agent LLM you need
+                  To use {LLMOption.name} as this workspace's agent LLM, you need
                   to set it up first.
                 </p>
                 <div>
@@ -170,7 +167,7 @@ function SetupProvider({
                 form="provider-form"
                 className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
-                Save {LLMOption.name} settings
+                Save {LLMOption.name} Settings
               </button>
             </div>
           </form>

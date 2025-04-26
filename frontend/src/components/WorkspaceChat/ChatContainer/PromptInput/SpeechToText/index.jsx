@@ -89,7 +89,7 @@ export default function SpeechToText({ sendCommand }) {
 
     try {
       const resultRes = await fetch("/api/speech/get-transcription", {
-        method: "POST",
+        method: "GET",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobName: jobNameRef.current }),
       });

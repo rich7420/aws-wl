@@ -2,51 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import AgentLLMItem from "./AgentLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
-import { CaretUpDown, Gauge, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import AgentModelSelection from "../AgentModelSelection";
 import { useTranslation } from "react-i18next";
 
-const ENABLED_PROVIDERS = [
-  "openai",
-  "anthropic",
-  "lmstudio",
-  "ollama",
-  "localai",
-  "groq",
-  "azure",
-  "koboldcpp",
-  "togetherai",
-  "openrouter",
-  "novita",
-  "mistral",
-  "perplexity",
-  "textgenwebui",
-  "generic-openai",
-  "bedrock",
-  "fireworksai",
-  "deepseek",
-  "ppio",
-  "litellm",
-  "apipie",
-  "xai",
-  "nvidia-nim",
-  "gemini",
-  // TODO: More agent support.
-  // "cohere",         // Has tool calling and will need to build explicit support
-  // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
-];
-const WARN_PERFORMANCE = [
-  "lmstudio",
-  "groq",
-  "azure",
-  "koboldcpp",
-  "ollama",
-  "localai",
-  "openrouter",
-  "novita",
-  "generic-openai",
-  "textgenwebui",
-];
+const ENABLED_PROVIDERS = ["bedrock"]; // 限定為 Bedrock
 
 const LLM_DEFAULT = {
   name: "System Default",
@@ -65,6 +25,14 @@ const LLMS = [
   ),
 ];
 
+// Bedrock 支援的模型清單
+const BEDROCK_MODELS = [
+  { name: "Nova Pro", value: "anthropic.nova-pro" },
+  { name: "Nova Micro", value: "anthropic.nova-micro" },
+  { name: "Sonnet 3.7", value: "anthropic.claude-3-7-sonnet" },
+  { name: "Sonnet 3.5 v2", value: "anthropic.claude-3-5-sonnet-v2" },
+];
+
 export default function AgentLLMSelection({
   settings,
   workspace,
@@ -78,6 +46,7 @@ export default function AgentLLMSelection({
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { t } = useTranslation();
+
   function updateLLMChoice(selection) {
     setSearchQuery("");
     setSelectedLLM(selection);
@@ -102,17 +71,9 @@ export default function AgentLLMSelection({
   }, [searchQuery, selectedLLM]);
 
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
+
   return (
     <div className="border-b border-white/40 pb-8">
-      {WARN_PERFORMANCE.includes(selectedLLM) && (
-        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
-          <div className="gap-x-2 flex items-center">
-            <Gauge className="shrink-0" size={25} />
-            <p className="text-sm">{t("agent.performance-warning")}</p>
-          </div>
-        </div>
-      )}
-
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
           {t("agent.provider.title")}
@@ -159,18 +120,16 @@ export default function AgentLLMSelection({
                 />
               </div>
               <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
-                {filteredLLMs.map((llm) => {
-                  return (
-                    <AgentLLMItem
-                      llm={llm}
-                      key={llm.name}
-                      availableLLMs={LLMS}
-                      settings={settings}
-                      checked={selectedLLM === llm.value}
-                      onClick={() => updateLLMChoice(llm.value)}
-                    />
-                  );
-                })}
+                {filteredLLMs.map((llm) => (
+                  <AgentLLMItem
+                    llm={llm}
+                    key={llm.name}
+                    availableLLMs={LLMS}
+                    settings={settings}
+                    checked={selectedLLM === llm.value}
+                    onClick={() => updateLLMChoice(llm.value)}
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -205,6 +164,7 @@ export default function AgentLLMSelection({
             provider={selectedLLM}
             workspace={workspace}
             setHasChanges={setHasChanges}
+            availableModels={BEDROCK_MODELS} // 傳遞 Bedrock 模型清單
           />
         </div>
       )}

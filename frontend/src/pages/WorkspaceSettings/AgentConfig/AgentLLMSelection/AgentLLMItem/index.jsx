@@ -1,6 +1,3 @@
-// This component differs from the main LLMItem in that it shows if a provider is
-// "ready for use" and if not - will then highjack the click handler to show a modal
-// of the provider options that must be saved to continue.
 import { createPortal } from "react-dom";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
@@ -10,6 +7,7 @@ import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
 
 const NO_SETTINGS_NEEDED = ["default", "none"];
+
 export default function AgentLLMItem({
   llm,
   availableLLMs,
@@ -32,8 +30,6 @@ export default function AgentLLMItem({
   }, [isOpen]);
 
   function handleProviderSelection() {
-    // Determine if provider needs additional setup because its minimum required keys are
-    // not yet set in settings.
     if (!checked) {
       const requiresAdditionalSetup = (llm.requiredConfig || []).some(
         (key) => !currentSettings[key]
@@ -131,8 +127,6 @@ function SetupProvider({
     return false;
   }
 
-  // Cannot do nested forms, it will cause all sorts of issues, so we portal this out
-  // to the parent container form so we don't have nested forms.
   return createPortal(
     <ModalWrapper isOpen={isOpen}>
       <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">

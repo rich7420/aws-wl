@@ -28,7 +28,7 @@ const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
 const { communityHubEndpoints } = require("./endpoints/communityHub");
 const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const { mcpServersEndpoints } = require("./endpoints/mcpServers");
-const { speechToTextEndpoints } = require("./endpoints/speechToText");
+const  speechToTextEndpoints  = require("./endpoints/speechToText");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -66,7 +66,7 @@ developerEndpoints(app, apiRouter);
 communityHubEndpoints(apiRouter);
 agentFlowEndpoints(apiRouter);
 mcpServersEndpoints(apiRouter);
-speechToTextEndpoints(apiRouter);
+apiRouter.use('/', speechToTextEndpoints);
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);

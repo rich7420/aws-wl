@@ -1,12 +1,12 @@
 const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 // 🔵 直接寫死你的 AWS Key
 AWS.config.update({
   region: 'us-west-2', // 你可以自己換成你實際AWS設定的區域
-  accessKeyId: '*****',
-  secretAccessKey: '*****',
+  accessKeyId: '******',
+  secretAccessKey: '******',
 });
 
 const s3 = new AWS.S3();

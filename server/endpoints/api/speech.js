@@ -4,7 +4,7 @@ const multer = require("multer");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { TranscribeClient, StartTranscriptionJobCommand, GetTranscriptionJobCommand } = require("@aws-sdk/client-transcribe");
 const { v4: uuidv4 } = require("uuid");
-const fetch = require("node-fetch");
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const REGION = process.env.AWS_REGION;
 const S3_BUCKET = process.env.S3_BUCKET;

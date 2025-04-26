@@ -14,9 +14,6 @@ import handleSocketResponse, {
   AGENT_SESSION_START,
 } from "@/utils/chat/agent";
 import DnDFileUploaderWrapper from "./DnDWrapper";
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
 
@@ -33,10 +30,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
-
-  const { listening, resetTranscript } = useSpeechRecognition({
-    clearTranscriptOnListen: true,
-  });
 
   // Emit an update to the state of the prompt input without directly
   // passing a prop in so that it does not re-render constantly.
@@ -65,20 +58,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         animate: true,
       },
     ];
-
-    if (listening) {
-      // Stop the mic if the send button is clicked
-      endSTTSession();
-    }
     setChatHistory(prevChatHistory);
     setMessageEmit("");
     setLoadingResponse(true);
   };
-
-  function endSTTSession() {
-    SpeechRecognition.stopListening();
-    resetTranscript();
-  }
 
   const regenerateAssistantMessage = (chatId) => {
     const updatedHistory = chatHistory.slice(0, -1);

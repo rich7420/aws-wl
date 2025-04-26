@@ -62,8 +62,8 @@ function apiSpeechEndpoints(router) {
       await transcribeClient.send(
         new StartTranscriptionJobCommand({
           TranscriptionJobName: jobName,
-          IdentifyLanguage: true,
-          LanguageOptions: ["zh-TW", "en-US"],
+          IdentifyMultipleLanguages: true,
+          LanguageOptions: ["zh-TW", "en-US", "ja-JP"],
           MediaFormat: "webm",
           Media: { MediaFileUri: mediaUri },
           OutputBucketName: S3_BUCKET,

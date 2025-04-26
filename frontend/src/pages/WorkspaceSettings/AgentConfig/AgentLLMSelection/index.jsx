@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import AgentLLMItem from "./AgentLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
-import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { CaretUpDown, Gauge, MagnifyingGlass, X } from "@phosphor-icons/react";
 import AgentModelSelection from "../AgentModelSelection";
 import { useTranslation } from "react-i18next";
 
-const ENABLED_PROVIDERS = ["bedrock"]; // 限定為 Bedrock
+const ENABLED_PROVIDERS = [
+  "bedrock",
+];
 
 const LLM_DEFAULT = {
   name: "System Default",
@@ -25,14 +27,6 @@ const LLMS = [
   ),
 ];
 
-// Bedrock 支援的模型清單
-const BEDROCK_MODELS = [
-  { name: "Nova Pro", value: "anthropic.nova-pro" },
-  { name: "Nova Micro", value: "anthropic.nova-micro" },
-  { name: "Sonnet 3.7", value: "anthropic.claude-3-7-sonnet" },
-  { name: "Sonnet 3.5 v2", value: "anthropic.claude-3-5-sonnet-v2" },
-];
-
 export default function AgentLLMSelection({
   settings,
   workspace,
@@ -46,7 +40,6 @@ export default function AgentLLMSelection({
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { t } = useTranslation();
-
   function updateLLMChoice(selection) {
     setSearchQuery("");
     setSelectedLLM(selection);
@@ -71,7 +64,6 @@ export default function AgentLLMSelection({
   }, [searchQuery, selectedLLM]);
 
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
-
   return (
     <div className="border-b border-white/40 pb-8">
       <div className="flex flex-col">
@@ -120,16 +112,18 @@ export default function AgentLLMSelection({
                 />
               </div>
               <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
-                {filteredLLMs.map((llm) => (
-                  <AgentLLMItem
-                    llm={llm}
-                    key={llm.name}
-                    availableLLMs={LLMS}
-                    settings={settings}
-                    checked={selectedLLM === llm.value}
-                    onClick={() => updateLLMChoice(llm.value)}
-                  />
-                ))}
+                {filteredLLMs.map((llm) => {
+                  return (
+                    <AgentLLMItem
+                      llm={llm}
+                      key={llm.name}
+                      availableLLMs={LLMS}
+                      settings={settings}
+                      checked={selectedLLM === llm.value}
+                      onClick={() => updateLLMChoice(llm.value)}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -164,7 +158,6 @@ export default function AgentLLMSelection({
             provider={selectedLLM}
             workspace={workspace}
             setHasChanges={setHasChanges}
-            availableModels={BEDROCK_MODELS} // 傳遞 Bedrock 模型清單
           />
         </div>
       )}

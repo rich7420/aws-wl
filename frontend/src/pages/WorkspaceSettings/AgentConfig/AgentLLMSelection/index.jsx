@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 // 僅啟用 Bedrock
 const ENABLED_PROVIDERS = ["bedrock"];
 
-// 僅包含 Bedrock 提供者，移除其他選項
+// 僅包含 Bedrock 提供者，移除 System Default
 const LLMS = AVAILABLE_LLM_PROVIDERS.filter((llm) =>
   ENABLED_PROVIDERS.includes(llm.value)
 );
@@ -29,11 +29,11 @@ export default function AgentLLMSelection({
   const { t } = useTranslation();
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
 
-  // 確保 Bedrock 存在，否則顯示錯誤
+  // 確保 Bedrock 存在
   if (!selectedLLMObject) {
     return (
-      <div className="text-red-500 p-4 rounded-lg bg-red-100">
-        Error: AWS Bedrock provider not found in available LLM providers. Please check the configuration in <code>LLMPreference.jsx</code>.
+      <div className="text-red-500">
+        Error: AWS Bedrock provider not found in available LLM providers.
       </div>
     );
   }
@@ -41,7 +41,7 @@ export default function AgentLLMSelection({
   return (
     <div className="border-b border-white/40 pb-8">
       <div className="flex flex-col">
-        <label htmlFor="name" className="block input-label text-white font-medium text-sm">
+        <label htmlFor="name" className="block input-label">
           {t("agent.provider.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
@@ -58,15 +58,12 @@ export default function AgentLLMSelection({
               src={selectedLLMObject.logo}
               alt={`${selectedLLMObject.name} logo`}
               className="w-10 h-10 rounded-md"
-              onError={(e) => {
-                e.target.src = "/default-logo.png"; // 圖標載入失敗時的備用圖片
-              }}
             />
             <div className="flex flex-col text-left">
               <div className="text-sm font-semibold text-white">
                 {selectedLLMObject.name}
               </div>
-              <div className="mt-1 text-xs text-white/60">
+              <div className="mt-1 text-xs text-description">
                 {selectedLLMObject.description}
               </div>
             </div>

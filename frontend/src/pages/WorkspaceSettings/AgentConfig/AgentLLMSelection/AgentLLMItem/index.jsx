@@ -1,3 +1,6 @@
+// This component differs from the main LLMItem in that it shows if a provider is
+// "ready for use" and if not - will then highjack the click handler to show a modal
+// of the provider options that must be saved to continue.
 import { createPortal } from "react-dom";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
@@ -6,6 +9,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
 
+const NO_SETTINGS_NEEDED = ["default", "none"];
 export default function AgentLLMItem({
   llm,
   availableLLMs,
@@ -28,6 +32,8 @@ export default function AgentLLMItem({
   }, [isOpen]);
 
   function handleProviderSelection() {
+    // Determine if provider needs additional setup because its minimum required keys are
+    // not yet set in settings.
     if (!checked) {
       const requiresAdditionalSetup = (llm.requiredConfig || []).some(
         (key) => !currentSettings[key]
@@ -68,18 +74,20 @@ export default function AgentLLMItem({
               <div className="mt-1 text-xs text-white/60">{description}</div>
             </div>
           </div>
-          {checked && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                openModal();
-              }}
-              className="border-none p-2 text-white/60 hover:text-white hover:bg-theme-bg-hover rounded-md transition-all duration-300"
-              title="Edit Settings"
-            >
-              <Gear size={20} weight="bold" />
-            </button>
-          )}
+          {checked &&
+            value !== "none" &&
+            !NO_SETTINGS_NEEDED.includes(value) && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  openModal();
+                }}
+                className="border-none p-2 text-white/60 hover:text-white hover:bg-theme-bg-hover rounded-md transition-all duration-300"
+                title="Edit Settings"
+              >
+                <Gear size={20} weight="bold" />
+              </button>
+            )}
         </div>
       </div>
       <SetupProvider
@@ -118,12 +126,13 @@ function SetupProvider({
       return;
     }
 
-    showToast(`${LLMOption.name} settings saved successfully.`, "success");
     closeModal();
     postSubmit();
     return false;
   }
 
+  // Cannot do nested forms, it will cause all sorts of issues, so we portal this out
+  // to the parent container form so we don't have nested forms.
   return createPortal(
     <ModalWrapper isOpen={isOpen}>
       <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
@@ -146,7 +155,7 @@ function SetupProvider({
             <div className="px-7 py-6">
               <div className="space-y-6 max-h-[60vh] overflow-y-auto p-1">
                 <p className="text-sm text-white/60">
-                  To use {LLMOption.name} as this workspace's agent LLM, you need
+                  To use {LLMOption.name} as this workspace's agent LLM you need
                   to set it up first.
                 </p>
                 <div>
@@ -167,7 +176,7 @@ function SetupProvider({
                 form="provider-form"
                 className="transition-all duration-300 bg-white text-black hover:opacity-60 px-4 py-2 rounded-lg text-sm"
               >
-                Save {LLMOption.name} Settings
+                Save {LLMOption.name} settings
               </button>
             </div>
           </form>

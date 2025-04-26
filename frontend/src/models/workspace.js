@@ -441,17 +441,41 @@ const Workspace = {
    * @returns {Promise<{response: {ok: boolean}, data: {success: boolean, error: string|null, document: {id: string, location:string}|null}}>}
    */
   uploadAndEmbedFile: async function (slug, formData) {
-    const response = await fetch(
-      `${API_BASE}/workspace/${slug}/upload-and-embed`,
-      {
-        method: "POST",
-        body: formData,
-        headers: baseHeaders(),
+    try {
+      const response = await fetch(
+        `${API_BASE}/workspace/${slug}/upload-and-embed`,
+        {
+          method: "POST",
+          body: formData,
+          headers: baseHeaders(),
+        }
+      );
+  
+      const data = await response.json();
+      if (!response.ok) {
+        console.error(`Upload failed: ${data.error || response.statusText}`);
+        return {
+          response,
+          data: { ...data, error: data.error || `Upload failed: ${response.status}` },
+        };
       }
-    );
-
-    const data = await response.json();
-    return { response, data };
+  
+      if (!data.document) {
+        console.warn("No document returned from upload:", data);
+        return {
+          response,
+          data: { ...data, error: "No document returned from server" },
+        };
+      }
+  
+      return { response, data };
+    } catch (error) {
+      console.error("Error in uploadAndEmbedFile:", error);
+      return {
+        response: { ok: false },
+        data: { success: false, error: error.message, document: null },
+      };
+    }
   },
 
   /**
